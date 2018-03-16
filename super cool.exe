@@ -1,0 +1,52 @@
+#include <Windows.h> /* For The Console, Resolution, Setting Mouse Position, etc. */
+#include <random> /* --> For The Random Engine */
+#include <chrono> /* --> For Waiting */
+#include <thread> /* --> For Waiting */
+#include <ctime> /* --> For The Random Engine */
+ 
+#define CANCEL_KEY GetAsyncKeyState(VK_DELETE) /* For Turning Off The Mouse Spasm */
+void GetDesktopResolution(unsigned int& DesktopWidth, unsigned int& DesktopHeight);
+ 
+int main() {
+    /* --> Variables <-- */
+    unsigned int SetPositionWidth; /* --> Variable For Setting The Random Position Along The x Axis */
+    unsigned int SetPositionHeight; /* --> Variable For Setting The Random Position Along The y Axis */
+    unsigned int DesktopWidth; /* --> Variable For Getting The Max Width */
+    unsigned int DesktopHeight; /* --> Variable For Getting The Max Height */
+ 
+    /* Random Engine */
+    std::default_random_engine ENGINE_SetPositionWidth; /* Random Engine */
+    std::default_random_engine ENGINE_SetPositionHeight; /* Random Engine */
+ 
+    GetDesktopResolution(DesktopWidth, DesktopHeight);
+ 
+    std::uniform_int_distribution<int> UNIFORM_DesktopWidth(0, DesktopWidth); /* Sets value (x to x) */
+    std::uniform_int_distribution<int> UNIFORM_DesktopHeight(0, DesktopHeight); /* Sets value (y to y) */
+ 
+    /* --> Console Related <-- */
+    SetConsoleTitleA("Startup.exe"); /* --> Name in the Task Manager */
+    FreeConsole(); /* --> Hides Console */
+ 
+    /* --> Main Loop <-- */
+    while (!CANCEL_KEY) {
+        SetPositionWidth = (UNIFORM_DesktopWidth(ENGINE_SetPositionWidth)); /* --> This will equal a random number, every second this is a new value from 0 to screen width */
+        SetPositionHeight = (UNIFORM_DesktopHeight(ENGINE_SetPositionHeight)); /* --> This will equal a random number, every second this is a new value from 0 to screen height */
+ 
+        SetCursorPos(SetPositionWidth, SetPositionHeight); /* --> Set The Cursor Position */
+ 
+        std::this_thread::sleep_for(std::chrono::milliseconds(1)); /* --> Save CPU Usage */
+    }
+ 
+    return EXIT_SUCCESS; /* --> Equivalent of 'return 0;' */
+}
+ 
+void GetDesktopResolution(unsigned int& DesktopWidth, unsigned int& DesktopHeight) {
+    RECT Desktop; /* --> For Getting The Desktop Resolution */
+ 
+    const HWND hDesktop = GetDesktopWindow(); /* --> Gets the Desktop Window */
+ 
+    GetWindowRect(hDesktop, &Desktop); /* --> Gets the Entire Desktop Size (I think*) */
+ 
+    DesktopWidth = Desktop.right; /* --> Getting the Width */
+    DesktopHeight = Desktop.bottom; /* --> Getting The Height */
+}

